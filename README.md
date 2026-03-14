@@ -143,3 +143,58 @@ bash scripts/eval_injecagent.sh <checkpoint> [target_type] [target_gpu] [target_
 # Example
 bash scripts/eval_injecagent.sh checkpoints/injecagent/checkpoint-500
 ```
+
+---
+
+## Experiment Results
+
+### Main Results (vs. Meta-SecAlign-8B, 13 Benchmarks)
+
+PISmith is evaluated against 7 baselines spanning static, search-based, and RL-based attack categories. All RL-based methods report ASR@10 / ASR@1; static and search-based methods report ASR@1.
+
+| Method | Category | Avg. ASR@10 | Avg. ASR@1 |
+|---|---|---|---|
+| Direct | Static | — | 0.04 |
+| Combined | Static | — | 0.07 |
+| TAP | Search-based | — | 0.11 |
+| PAIR | Search-based | — | 0.16 |
+| Strategy | Search-based | — | 0.21 |
+| Vanilla GRPO | RL-based | 0.13 | 0.05 |
+| RL-Hammer | RL-based | 0.70 | 0.48 |
+| **PISmith (Ours)** | **RL-based** | **1.00** | **0.87** |
+
+### Utility–Robustness Trade-off (8 Defenses, Qwen3-4B-Instruct-2507)
+
+PISmith ASR@1 averaged over 13 benchmarks. Utility measures task accuracy without attack.
+
+| Defense | Type | Utility | PISmith ASR@1 |
+|---|---|---|---|
+| No Defense | — | 0.74 | 0.92 |
+| Sandwich | Prevention | 0.74 | 0.91 |
+| Instructional | Prevention | 0.73 | 0.92 |
+| PromptArmor | Prevention | 0.74 | 0.92 |
+| DataFilter | Prevention | 0.63 | 0.49 |
+| PIGuard | Filter | 0.72 | 0.82 |
+| PromptGuard | Filter | 0.66 | 0.89 |
+| DataSentinel | Filter | 0.55 | 0.52 |
+
+> No defense simultaneously achieves high utility (≥0.70) and low ASR (≤0.60), revealing a fundamental utility–robustness trade-off.
+
+### Agentic Settings
+
+#### InjecAgent
+
+| Target Model | Direct ASR@1 | **PISmith ASR@10/1** |
+|---|---|---|
+| Meta-SecAlign-8B | 0.00 | **1.00 / 0.99** |
+| GPT-4o-mini | 0.02 | **1.00 / 0.99** |
+| GPT-4.1-nano | 0.01 | **1.00 / 1.00** |
+| GPT-5-nano | 0.00 | **1.00 / 0.95** |
+
+#### AgentDojo (best static baseline vs. PISmith)
+
+| Target Model | Best Static ASR@1 | **PISmith ASR@10/1** |
+|---|---|---|
+| GPT-4o-mini | 0.23 | **0.78 / 0.62** |
+| GPT-4.1-nano | 0.20 | **0.81 / 0.64** |
+| GPT-5-nano | 0.01 | **0.38 / 0.24** |
