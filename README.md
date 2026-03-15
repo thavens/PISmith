@@ -21,7 +21,7 @@ conda activate PISmith
 pip install -r requirements.txt
 ```
 
-**3. (Optional) Prepare the Meta-SecAlign model checkpoint**
+**3. (Optional) Prepare the [Meta-SecAlign](https://github.com/facebookresearch/Meta_SecAlign) model checkpoint**
 
 For experiments targeting the `secalign` defense, run the provided merge script to download and merge the base model with the SecAlign adapter:
 
