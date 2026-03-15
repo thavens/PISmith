@@ -35,9 +35,9 @@ This downloads `meta-llama/Llama-3.1-8B-Instruct` and `facebook/Meta-SecAlign-8B
 
 ## Scripts
 
-### PIArena
+### [PIArena](https://github.com/sleeepeer/PIArena)
 
-PIArena supports training and evaluation against a range of prompt injection defenses. Use the `defense` argument to select the target defense.
+[PIArena](https://github.com/sleeepeer/PIArena) supports training and evaluation against a range of prompt injection defenses. Use the `defense` argument to select the target defense.
 
 **Supported defenses:**
 `secalign`, `none`, `promptguard`, `promptarmor`, `sandwich`, `instructional`, `datasentinel`, `piguard`, `datafilter`
@@ -92,7 +92,7 @@ bash scripts/eval_piarena.sh checkpoints/piarena_none/checkpoint-500 piguard
 ```
 ---
 
-### AgentDojo
+### [AgentDojo](https://github.com/ethz-spylab/agentdojo)
 
 Supports GPT-4o-mini, GPT-4o, and local vLLM targets.
 
@@ -119,7 +119,7 @@ bash scripts/eval_agentdojo.sh checkpoints/agentdojo/checkpoint-500 gpt4o-mini
 
 ---
 
-### InjecAgent
+### [InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent)
 
 Supports a local vLLM target, GPT-4o-mini, or multi-target mode.
 
