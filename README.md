@@ -178,7 +178,7 @@ PISmith ASR@1 averaged over 13 benchmarks. Utility measures task accuracy withou
 | PromptGuard | Filter | 0.66 | 0.89 |
 | DataSentinel | Filter | 0.55 | 0.52 |
 
-> No defense simultaneously achieves high utility (≥0.70) and low ASR (≤0.60), revealing a fundamental utility–robustness trade-off.
+> It remains challenging for state-of-the-art defenses to simultaneously achieve high utility (≥0.70) and low ASR (≤0.60), revealing a fundamental utility–robustness trade-off.
 
 ### Agentic Settings
 
