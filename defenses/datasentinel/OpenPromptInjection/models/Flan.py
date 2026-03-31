@@ -11,7 +11,7 @@ class Flan(Model):
         self.device = config["params"]["device"]
         self.max_output_tokens = config["params"]["max_output_tokens"]
 
-        self.model = T5ForConditionalGeneration.from_pretrained(self.name, torch_dtype=torch.bfloat16, device_map="auto")
+        self.model = T5ForConditionalGeneration.from_pretrained(self.name, dtype=torch.bfloat16, device_map="auto")
         self.tokenizer = AutoTokenizer.from_pretrained(self.name)
 
     def query(self, msg):

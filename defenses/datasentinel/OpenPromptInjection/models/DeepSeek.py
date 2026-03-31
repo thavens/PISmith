@@ -11,7 +11,7 @@ class DeepSeekWrapper(Model):
         self.max_output_tokens = int(config["params"]["max_output_tokens"])
         self.device = config["params"]["device"]
         self.tokenizer = AutoTokenizer.from_pretrained(self.name)
-        self.model = AutoModelForCausalLM.from_pretrained(self.name, device_map="auto", torch_dtype=torch.float16, load_in_8bit=True)  # load_in_8bit=True
+        self.model = AutoModelForCausalLM.from_pretrained(self.name, device_map="auto", dtype=torch.float16, load_in_8bit=True)  # load_in_8bit=True
         self.model.generation_config = GenerationConfig.from_pretrained(self.name)
         self.model.generation_config.pad_token_id = self.model.generation_config.eos_token_id
 
@@ -49,7 +49,7 @@ class DeepSeekR1DistillLLaMAWrapper(Model):
             # device_map="auto",
             device_map={"": 0},  # means: put all layers on cuda:0
             max_memory={0: "20GiB"},  # or however much GPU 0 has
-            torch_dtype=torch.bfloat16,
+            dtype=torch.bfloat16,
             load_in_4bit=True
         )
 
@@ -93,7 +93,7 @@ class DeepSeekR1DistillQwenWrapper(Model):
             # device_map="auto",
             device_map={"": 0},  # means: put all layers on cuda:0
             max_memory={0: "20GiB"},  # or however much GPU 0 has
-            torch_dtype=torch.bfloat16,
+            dtype=torch.bfloat16,
             load_in_4bit=True
         )
 

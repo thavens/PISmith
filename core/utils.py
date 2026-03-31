@@ -199,6 +199,19 @@ Scratchpad (Please avoid repeating actions in the [Scratchpad] because they have
 """
 
 
+def recursive_replace(obj, instruction):
+    if isinstance(obj, dict):
+        return {k: recursive_replace(v, instruction) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [recursive_replace(i, instruction) for i in obj]
+    elif isinstance(obj, str):
+        if "<Attacker Instruction>" in obj:
+            return obj.replace("<Attacker Instruction>", instruction)
+        return obj
+    else:
+        return obj
+
+
 def get_injecagent_attacker_sys_prompt(
     context_tail: str = "",
     injected_task: str = "",

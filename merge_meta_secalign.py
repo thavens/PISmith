@@ -12,7 +12,7 @@ adapter_name = "facebook/Meta-SecAlign-8B"
 save_path = "checkpoints/Meta-SecAlign-8B-merged"
 
 model = AutoModelForCausalLM.from_pretrained(
-    base_model_name, device_map="auto", torch_dtype="auto"
+    base_model_name, device_map="auto", dtype="auto"
 )
 
 # Load adapter

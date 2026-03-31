@@ -52,7 +52,7 @@ class AttentionModel(Model):
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
         self.model = AutoModelForCausalLM.from_pretrained(
             model_id,
-            torch_dtype=torch.bfloat16,
+            dtype=torch.bfloat16,
             device_map=device,
             trust_remote_code=True,
             attn_implementation="eager",

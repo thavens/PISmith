@@ -6,20 +6,21 @@ This is an official implementation of [**PISmith: Reinforcement Learning-based R
 
 ## Environment Setup
 
-PISmith has been tested using Python 3.10 and CUDA Version: 12.9
+PISmith has been tested using Python 3.12 and CUDA Version: 12.9
 
-**1. Create a Python 3.10 conda environment**
-
-```bash
-conda create -n PISmith python=3.10 -y
-conda activate PISmith
-```
-
-**2. Install dependencies** 
+**1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)**
 
 ```bash
-pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
+
+**2. Install dependencies**
+
+```bash
+uv sync
+```
+
+This creates a virtual environment and installs all dependencies, including the `rl_attack` package in editable mode.
 
 **3. (Optional) Prepare the [Meta-SecAlign](https://github.com/facebookresearch/Meta_SecAlign) model checkpoint**
 

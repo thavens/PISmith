@@ -25,6 +25,9 @@ Usage:
 import os
 import sys
 import argparse
+import logging
+
+logging.basicConfig(level=logging.WARNING)
 
 from trl import ModelConfig
 from peft import LoraConfig
@@ -114,13 +117,15 @@ def _apply_model_init_kwargs(grpo_config, model_config: ModelConfig):
     grpo_config.ddp_find_unused_parameters = False
     grpo_config.model_init_kwargs = {"device_map": None}
 
-    if model_config.torch_dtype is not None:
-        grpo_config.model_init_kwargs["torch_dtype"] = model_config.torch_dtype
+    import torch
+    if model_config.dtype is not None:
+        grpo_config.model_init_kwargs["torch_dtype"] = model_config.dtype
     else:
-        grpo_config.model_init_kwargs["torch_dtype"] = "bfloat16"
+        grpo_config.model_init_kwargs["torch_dtype"] = torch.bfloat16
 
     if model_config.attn_implementation is not None:
         grpo_config.model_init_kwargs["attn_implementation"] = model_config.attn_implementation
+        grpo_config.model_init_kwargs["use_kernels"] = True
     else:
         grpo_config.model_init_kwargs["attn_implementation"] = "sdpa"
 
@@ -128,10 +133,15 @@ def _apply_model_init_kwargs(grpo_config, model_config: ModelConfig):
 def _make_trainer(grpo_config, reward_functions, train_dataset, peft_config, use_adaptive,
                   eval_dataset=None):
     """Create the appropriate GRPO trainer."""
+    from transformers import AutoTokenizer
     from core.trainer import AdaptiveGRPOTrainer, AdaptiveLossConfig
     from trl import GRPOTrainer
 
-    extra = {}
+    tokenizer = AutoTokenizer.from_pretrained(
+        grpo_config.attacker_model_name_or_path, truncation_side="left", padding_side="left"
+    )
+
+    extra = {"processing_class": tokenizer}
     if eval_dataset is not None:
         extra["eval_dataset"] = eval_dataset
 

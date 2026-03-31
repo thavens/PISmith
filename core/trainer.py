@@ -172,6 +172,7 @@ class AdaptiveGRPOTrainer(GRPOTrainer):
         batch_size=None, compute_entropy=False,
         pixel_values=None, image_grid_thw=None, num_images=None,
         pixel_attention_mask=None, image_sizes=None, token_type_ids=None,
+        mm_token_type_ids=None,
     ):
         batch_size = batch_size or input_ids.size(0)
         all_logps, all_entropies = [], []

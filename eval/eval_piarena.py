@@ -153,7 +153,7 @@ class PIArenaEvaluator:
 
             base_model = AutoModelForCausalLM.from_pretrained(
                 base if is_lora else model_path,
-                torch_dtype=torch.bfloat16,
+                dtype=torch.bfloat16,
                 device_map="auto",
                 trust_remote_code=True,
             )

@@ -11,7 +11,7 @@ class Llama(Model):
         self.max_output_tokens = config["params"]["max_output_tokens"]
 
         self.tokenizer = LlamaTokenizer.from_pretrained(self.name, device_map="auto")
-        self.model = LlamaForCausalLM.from_pretrained(self.name, device_map="auto", torch_dtype=torch.float16)
+        self.model = LlamaForCausalLM.from_pretrained(self.name, device_map="auto", dtype=torch.float16)
 
     def query(self, msg):
         input_ids = self.tokenizer(msg, return_tensors="pt").input_ids.to("cuda")

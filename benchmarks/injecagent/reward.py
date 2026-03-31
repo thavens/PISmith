@@ -16,6 +16,7 @@ from rl_attack.core.utils import (
     to_anthropic_tool_call,
     to_anthropic_tool_result,
     anthropic_completion_to_openai,
+    recursive_replace,
 )
 from rl_attack.benchmarks.injecagent.output_parsing import (
     evaluate_output_finetuned,
@@ -243,12 +244,12 @@ class InjecAgentToolCallingReward:
                 else:
                     print(f"Repeated rate limit errors: {e}")
                     raise e
-            except Exception as e:
-                if hasattr(e, "message") and "expired" in e.message:
-                    raise e
-                if attempt >= max_retries - 1:
-                    print(f"Skipping due to error: {e}")
-                    return ""
+            # except Exception as e:
+            #     if hasattr(e, "message") and "expired" in e.message:
+            #         raise e
+            #     if attempt >= max_retries - 1:
+            #         print(f"Skipping due to error: {e}")
+            #         return ""
 
     def run_gpt_target_model(self, i, user_inputs):
         """Run GPT target model with tool calling (for fine-tuned models)."""
@@ -430,7 +431,7 @@ class InjecAgentToolCallingReward:
                     ChatCompletionMessageToolCall(
                         id=call_id,
                         function=Function(
-                            arguments=curr_data_row["Tool Parameters"],
+                            arguments=json.dumps(eval(curr_data_row["Tool Parameters"])),
                             name=function_name,
                         ),
                         type="function",
@@ -439,9 +440,11 @@ class InjecAgentToolCallingReward:
             )
             messages.append(message)
 
-            observation = curr_data_row["Tool Response Template"].replace(
-                "<Attacker Instruction>", adv_prompts[i]
+            obs_dict = eval(curr_data_row["Tool Response Template"])
+            obs_dict = recursive_replace(
+                obs_dict, adv_prompts[i]
             )
+            observation = json.dumps(obs_dict)
             messages.append(
                 {
                     "tool_call_id": call_id,
@@ -453,20 +456,20 @@ class InjecAgentToolCallingReward:
             target_model_messages.append(messages)
             all_available_tools.append(available_tools)
         user_inputs_gpt = list(zip(target_model_messages, all_available_tools))
-
+        
         # Step 1: Parallel generation from all target models
         from concurrent.futures import ThreadPoolExecutor
 
         with ThreadPoolExecutor(max_workers=len(self.all_target_client)) as executor:
             futures = []
             for i in range(len(self.all_target_client)):
-                if "/" not in self.all_target_model_name_or_path[i]:
+                if "llama" in self.all_target_model_name_or_path[i].lower():
                     futures.append(
-                        executor.submit(self.run_gpt_target_model, i, user_inputs_gpt)
+                        executor.submit(self.run_target_model, i, user_inputs)
                     )
                 else:
                     futures.append(
-                        executor.submit(self.run_target_model, i, user_inputs)
+                        executor.submit(self.run_gpt_target_model, i, user_inputs_gpt)
                     )
             all_outputs = [f.result() for f in futures]
 
@@ -476,20 +479,20 @@ class InjecAgentToolCallingReward:
             for i, curr_row in enumerate(model_outputs):
                 curr_data_row = data[i]
 
-                if "/" not in self.all_target_model_name_or_path[j]:
-                    eval_result = evaluate_output_finetuned(
-                        curr_row[0],
-                        curr_data_row["Attacker Tools"][0],
-                        curr_data_row["User Tool"],
-                        curr_row[1],
-                    )
-                else:
+                if "llama" in self.all_target_model_name_or_path[j].lower():
                     eval_result = evaluate_output_prompted(
                         curr_row,
                         curr_data_row["Attacker Tools"][0],
                         curr_data_row["Attacker Tools"],
                         curr_data_row["User Tool"],
                         adv_prompts[i],
+                    )
+                else:
+                    eval_result = evaluate_output_finetuned(
+                        curr_row[0],
+                        curr_data_row["Attacker Tools"][0],
+                        curr_data_row["User Tool"],
+                        curr_row[1],
                     )
 
                 if eval_result["eval"] == "succ":

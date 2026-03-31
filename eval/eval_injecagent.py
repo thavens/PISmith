@@ -382,7 +382,7 @@ def main():
             attacker_tokenizer.pad_token = attacker_tokenizer.eos_token
         base_model = AutoModelForCausalLM.from_pretrained(
             base if is_lora else args.attacker_model,
-            torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True,
+            dtype=torch.bfloat16, device_map="auto", trust_remote_code=True,
         )
         if is_lora and HAS_PEFT:
             base_model = PeftModel.from_pretrained(base_model, args.attacker_model)

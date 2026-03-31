@@ -245,7 +245,7 @@ class SecAlignTransformersModel:
         base = AutoModelForCausalLM.from_pretrained(
             base_model,
             device_map="auto",
-            torch_dtype="auto",
+            dtype="auto",
             trust_remote_code=True,
             token=os.getenv("HF_TOKEN"),
             cache_dir=hf_cache_dir,

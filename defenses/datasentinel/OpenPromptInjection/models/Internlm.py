@@ -10,7 +10,7 @@ class Internlm(Model):
         self.tokenizer = AutoTokenizer.from_pretrained(self.name, trust_remote_code=True,
                                                   device_map="auto")
         self.model = AutoModelForCausalLM.from_pretrained(self.name, trust_remote_code=True,
-                                                     device_map="auto", torch_dtype=torch.float16)
+                                                     device_map="auto", dtype=torch.float16)
         self.model = self.model.eval()
 
     def query(self, msg):
