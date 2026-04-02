@@ -463,7 +463,8 @@ class InjecAgentToolCallingReward:
         with ThreadPoolExecutor(max_workers=len(self.all_target_client)) as executor:
             futures = []
             for i in range(len(self.all_target_client)):
-                if "llama" in self.all_target_model_name_or_path[i].lower():
+                model_name = self.all_target_model_name_or_path[i].lower()
+                if "llama" in model_name or "meta-secalign" in model_name:
                     futures.append(
                         executor.submit(self.run_target_model, i, user_inputs)
                     )
@@ -479,7 +480,8 @@ class InjecAgentToolCallingReward:
             for i, curr_row in enumerate(model_outputs):
                 curr_data_row = data[i]
 
-                if "llama" in self.all_target_model_name_or_path[j].lower():
+                model_name = self.all_target_model_name_or_path[j].lower()
+                if "llama" in model_name or "meta-secalign" in model_name:
                     eval_result = evaluate_output_prompted(
                         curr_row,
                         curr_data_row["Attacker Tools"][0],

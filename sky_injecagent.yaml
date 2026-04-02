@@ -1,0 +1,51 @@
+name: pismith-injecagent
+
+resources:
+  accelerators: H100:2
+  infra: gcp/us-east4
+  # infra: lambda
+  use_spot: true
+
+envs:
+  WEAVE_DISABLED: "true"
+
+file_mounts:
+  ~/.netrc: ~/.netrc
+  ~/.cache/huggingface/token: ~/.cache/huggingface/token
+  ~/.git-credentials: ~/.git-credentials
+  # /bucket:
+  #   name: grpo-bucket
+  #   store: volume
+  #   persistent: true
+  #   config:
+  #     disk_size: 128
+  outputs:
+    name: dpo-bucket-gcs
+    store: gcs
+
+workdir: .
+
+setup: |
+  sudo apt update
+  sudo apt install -y gh nvtop
+
+  # Install uv
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  source $HOME/.local/bin/env
+
+  # Install VS Code CLI
+  wget -O vscode.tgz 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64'
+  tar xvf vscode.tgz
+  chmod +x ./code
+
+  # Install dependencies
+  cd ~/sky_workdir
+  uv sync
+
+  # Prepare Meta-SecAlign target model checkpoint
+  uv run python merge_meta_secalign.py
+
+run: |
+  cd ~/sky_workdir
+  source .venv/bin/activate
+  bash scripts/train_injecagent.sh vllm "1" 0 8000
